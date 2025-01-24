@@ -34,21 +34,32 @@ module.exports = {
             res.status(500).json({ msg: `500 server error`, error: err.message });
         }
     },
-    addNew: async (req, res) => {
+    addNew: async (req, res) => { 
+        // פונקציה אסינכרונית שמטרתה להוסיף מוצר חדש למסד הנתונים.
         try {
-            // וודא ש-body לא ריק
-            if (!req.body || Object.keys(req.body).length === 0) {
+            // התחל בלנסות להריץ את הקוד שבתוך הבלוק הזה.
+            if (!req.body || Object.keys(req.body).length === 0) { 
+                // בדוק אם הגוף של הבקשה ריק (או שהוא לא קיים), ואם כן, החזר תשובת שגיאה עם סטטוס 400 (בקשה לא חוקית).
                 return res.status(400).json({ message: "Invalid request body" });
             }
     
-            // הכנס את המוצר למסד הנתונים
-            const data = await ProductModel.insertMany([req.body]);
-            return res.status(200).json(data);
+            // אם הבקשה תקינה, המשך לנסות להכניס את המוצר למסד הנתונים.
+            const data = await ProductModel.insertMany([req.body]); 
+            // הכנס את המוצר (שקיבלת מגוף הבקשה) למסד הנתונים באמצעות הפונקציה `insertMany`. 
+            // `await` מחכה לסיום הפעולה לפני שהוא ממשיך לקוד הבא.
+    
+            return res.status(200).json(data); 
+            // אם ההוספה למסד הנתונים הצליחה, החזר את המידע שנשמר יחד עם סטטוס 200 (הצלחה).
         } catch (error) {
-            console.error("Error adding new product:", error);
+            // אם קרתה שגיאה במהלך הקוד שבבלוק `try`, התפס את השגיאה כאן.
+            console.error("Error adding new product:", error); 
+            // הדפס את השגיאה בקונסול (לצורך דיבאגינג).
+    
             return res.status(500).json({ message: "Failed to add product", error });
+            // החזר תשובת שגיאה עם סטטוס 500 (שגיאת שרת פנימית) והודעה מתאימה.
         }
-    },    
+    },
+       
     // addNew: (req, res) => {
     //     const product = new ProductModel({
     //         _id: new mongoose.Types.ObjectId(),
